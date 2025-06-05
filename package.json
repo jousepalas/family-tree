@@ -21,7 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "next": "14.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-family-tree": "^3.2.0",
+    "relative-time-format": "^1.1.6"
   },
   "devDependencies": {
     "@prisma/client": "^6.5.0",

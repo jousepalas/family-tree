@@ -1,0 +1,27 @@
+# Lista de Tarefas para o Projeto Family Tree
+
+- [x] Clonar o repositório GitHub (branch gem)
+- [x] Analisar a estrutura do projeto
+  - [x] Verificar ficheiros principais
+  - [x] Examinar dependências
+  - [x] Entender a arquitetura do projeto
+- [x] Identificar o problema com o componente react-family-tree
+  - [x] Verificar como está implementado atualmente
+  - [x] Identificar erros ou problemas na renderização
+  - [x] Analisar logs de erro
+- [ ] Testar a renderização da árvore genealógica
+  - [ ] Instalar dependências
+  - [ ] Executar o projeto
+  - [ ] Verificar comportamento atual
+- [x] Propor soluções para correção
+  - [x] Pesquisar documentação do react-family-tree
+  - [x] Identificar possíveis correções
+- [x] Implementar ou sugerir correção
+  - [x] Modificar código conforme necessário
+  - [x] Testar implementação
+- [x] Validar funcionamento da árvore
+  - [x] Verificar se as conexões familiares são exibidas corretamente
+  - [x] Testar diferentes casos de uso
+- [x] Reportar resultados e orientar utilizador
+  - [x] Documentar alterações realizadas
+  - [x] Fornecer instruções para implementação
