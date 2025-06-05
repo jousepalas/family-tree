@@ -1,0 +1,5 @@
+# src/graphql/mutations/invite.gql
+
+mutation GenerateInviteCode {
+  generateInviteCode # Returns the string code
+}

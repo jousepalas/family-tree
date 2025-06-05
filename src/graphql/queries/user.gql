@@ -1,0 +1,36 @@
+# src/graphql/queries/user.gql
+
+query GetCurrentUserProfile {
+  me {
+    id
+    name
+    email
+    emailVerified
+    image
+    dateOfBirth
+    gender
+    fatherName
+    motherName
+    phoneNumber
+    countryCode
+    country
+    isProfilePublic
+    createdAt
+    updatedAt
+    # Avoid fetching large nested data by default
+    # invitedBy { id name }
+  }
+}
+
+query GetUserProfile($userId: ID!) {
+  getUserProfile(userId: $userId) {
+    id
+    name
+    image
+    # Only include fields allowed for public/related view
+    # dateOfBirth # Example: Only if related or public and allowed
+    # gender # Example: Only if related or public and allowed
+    isProfilePublic
+    createdAt
+  }
+}

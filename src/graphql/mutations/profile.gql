@@ -1,0 +1,19 @@
+# src/graphql/mutations/profile.gql
+
+mutation UpdateProfile($input: UpdateUserProfileInput!) {
+  updateProfile(input: $input) {
+    id
+    name
+    email # Return updated fields
+    image
+    dateOfBirth
+    gender
+    fatherName
+    motherName
+    phoneNumber
+    countryCode
+    country
+    isProfilePublic
+    updatedAt
+  }
+}
