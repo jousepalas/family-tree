@@ -13,7 +13,6 @@ model User {
   password  String
   firstName String
   lastName  String
-  birthDate DateTime?
   deathDate DateTime?
 
   familyCode String?

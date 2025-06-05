@@ -9,7 +9,8 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "limpa": "rm -rf node_modules && rm -f package-lock.json && rm -rf .next"
+    "limpa": "rm -rf node_modules && rm -f package-lock.json && rm -rf .next && npm install",
+    "ini": "npm run limpa && npm run prisma:generate && npm run prisma:push && npm run dev"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0",
