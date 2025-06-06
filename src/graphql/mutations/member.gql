@@ -1,0 +1,21 @@
+# src/graphql/mutations/member.gql
+
+mutation AddManualMember($input: AddManualMemberInput!) {
+  addManualMember(input: $input) {
+    id
+    name
+    gender
+    dateOfBirth
+    relationshipToAdder
+    createdAt
+    addedBy { # Include user who added if needed
+        id
+        name
+    }
+  }
+}
+
+# Optional: Mutation to link manual member (if UI triggers it)
+mutation LinkManualMember($manualMemberId: ID!, $userId: ID!) {
+    linkManualMemberToUser(manualMemberId: $manualMemberId, userId: $userId)
+}

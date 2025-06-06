@@ -1,0 +1,13 @@
+# src/graphql/mutations/auth.gql
+
+mutation RegisterUser($input: RegisterUserInput!) {
+  registerUser(input: $input) {
+    id
+    name
+    email
+    createdAt
+  }
+}
+
+# Note: Login is handled by NextAuth's signIn function, not typically a GraphQL mutation
+# unless you implement custom JWT logic outside NextAuth.

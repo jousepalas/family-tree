@@ -1,0 +1,183 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// --- Authentication Models ---
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  user         User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- Core User & Profile Model ---
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+
+  // Profile Data
+  dateOfBirth   DateTime?
+  gender        String?
+  fatherName    String?
+  motherName    String?
+  phoneNumber   String?
+  countryCode   String?
+  country       String?
+  isProfilePublic Boolean @default(false)
+
+  // Invitation System
+  inviteCode    String?   @unique
+  invitedById   String?   @db.ObjectId
+  // FIX: Stricter cycle break: Both NoAction for relation TO User (invitedBy points TO a User)
+  // Note: onDelete: SetNull might also work here sometimes, but NoAction is safest for validation
+  invitedBy     User?     @relation("Invitations", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  // The list side usually doesn't need actions specified
+  invitations   User[]    @relation("Invitations")
+
+  // Authentication Links
+  accounts      Account[]
+  sessions      Session[]
+
+  // Family Relationships (Users only)
+  relationshipsInitiated Relationship[] @relation("RelationshipInitiator")
+  relationshipsReceived  Relationship[] @relation("RelationshipTarget")
+
+  // Manual Tree Additions
+  manualMembersAdded ManualFamilyMember[] @relation("AddedManualMember")
+  linkedManualMember ManualFamilyMember?  @relation("LinkedToRegisteredUser")
+
+  // Content Creation
+  posts         Post[]
+  comments      Comment[]
+}
+
+// --- Family Structure Models ---
+
+model Relationship {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  initiatorId String @db.ObjectId
+  targetId    String @db.ObjectId
+  type        String
+
+  // FIX: Stricter cycle break: Both NoAction for relations TO User
+  initiator   User   @relation("RelationshipInitiator", fields: [initiatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  target      User   @relation("RelationshipTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([initiatorId, targetId, type])
+  @@index([initiatorId])
+  @@index([targetId])
+}
+
+model ManualFamilyMember {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  addedById           String    @db.ObjectId
+  name                String
+  gender              String?
+  dateOfBirth         DateTime?
+  relationshipToAdder String?
+
+  linkedUserId        String?   @unique @db.ObjectId // @unique implies index
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  linkedUser          User?     @relation("LinkedToRegisteredUser", fields: [linkedUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  addedBy             User      @relation("AddedManualMember", fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([addedById])
+  // Removed duplicate @@index([linkedUserId])
+}
+
+
+// --- Content Models ---
+
+enum PostType {
+  AVISO
+  ANUNCIO
+  EVENTO
+}
+
+model Post {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  authorId      String    @db.ObjectId
+  type          PostType
+  title         String?
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  notifyUntil   DateTime?
+  eventDate     DateTime?
+  eventLocation String?
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  author        User      @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comments      Comment[]
+
+  @@index([authorId])
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  authorId  String   @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // FIX: Keep Cascade delete for Comments when Post is deleted, but NoAction for Update
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  // FIX: Stricter cycle break: Both NoAction for relation TO User
+  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([postId])
+  @@index([authorId])
+}

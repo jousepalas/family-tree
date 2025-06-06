@@ -1,0 +1,24 @@
+# src/graphql/queries/tree.gql
+
+query GetFamilyTreeData($userId: ID!) {
+  getFamilyTreeData(userId: $userId) {
+    nodes {
+      id
+      nodeId # Unique ID for the library
+      type # 'USER' or 'MANUAL'
+      name
+      gender
+      dateOfBirth
+      imageUrl
+      parents # List of parent nodeIds
+      spouses # List of spouse nodeIds
+      children # List of child nodeIds (may not be needed if library derives)
+    }
+    # Optional: Add links if your library needs them separately
+    # links {
+    #   sourceNodeId
+    #   targetNodeId
+    #   type # e.g., 'PARENT_CHILD', 'SPOUSE'
+    # }
+  }
+}
